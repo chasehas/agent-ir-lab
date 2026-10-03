@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Falco alerts · ci-runner-01</title>
+<style>
+  :root {
+    --bg: #eef1f4;
+    --panel: #ffffff;
+    --text: #0f172a;
+    --muted: #475569;
+    --border: #c3ccd6;
+    --row-hover: #f1f5f9;
+    --row-open: #e8effa;
+    --topbar: #1e293b;
+    --topbar-text: #f8fafc;
+    --accent: #1d4ed8;
+    --mark: #fde047;
+    --mono: Consolas, "Cascadia Mono", "SF Mono", Menlo, "Liberation Mono", monospace;
+    --sans: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--bg); color: var(--text); font: 17px/1.45 var(--sans); }
+
+  .topbar { background: var(--topbar); color: var(--topbar-text); display: flex; align-items: center; gap: 28px; padding: 0 24px; height: 54px; }
+  .brand { font-weight: 700; font-size: 19px; letter-spacing: .2px; }
+  .topbar .env { margin-left: auto; color: #cbd5e1; font-size: 15px; }
+  .topbar .env b { color: #fff; font-weight: 600; }
+
+  main { padding: 20px 24px 40px; }
+  h1 { font-size: 24px; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 16px; }
+
+  .toolbar { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-bottom: 14px; }
+  .search { flex: 1 1 100%; display: flex; gap: 12px; align-items: center; }
+  .search input { flex: 1; font: 18px var(--mono); padding: 9px 12px; border: 2px solid var(--border); border-radius: 5px; color: var(--text); background: #fff; min-width: 0; }
+  .search input:focus { outline: none; border-color: var(--accent); }
+  button { font: inherit; cursor: pointer; }
+  .btn { background: #fff; border: 1px solid var(--border); border-radius: 5px; padding: 8px 14px; color: var(--text); }
+  .btn:hover { background: var(--row-hover); }
+  .group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .group-label { color: var(--muted); font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
+  .chip { border: 2px solid var(--border); background: #fff; border-radius: 999px; padding: 4px 12px 4px 10px; display: inline-flex; align-items: center; gap: 7px; font-size: 16px; color: var(--muted); }
+  .chip .dot { width: 12px; height: 12px; border-radius: 50%; background: #94a3b8; }
+  .chip[aria-pressed="true"] { color: var(--text); border-color: #334155; font-weight: 600; }
+  .chip[aria-pressed="false"] .dot { opacity: .3; }
+  select { font: 16px var(--sans); padding: 7px 10px; border: 1px solid var(--border); border-radius: 5px; background: #fff; color: var(--text); max-width: 100%; }
+  .count { font-weight: 700; font-size: 19px; white-space: nowrap; min-width: 9em; text-align: right; }
+
+  .tablewrap { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  table.alerts { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  table.alerts th { text-align: left; font-size: 14px; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); background: #f8fafc; border-bottom: 2px solid var(--border); padding: 10px 12px; }
+  table.alerts td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; vertical-align: top; overflow-wrap: anywhere; }
+  table.alerts tr.alert { cursor: pointer; }
+  table.alerts tr.alert:hover { background: var(--row-hover); }
+  table.alerts tr.alert:focus { outline: 3px solid var(--accent); outline-offset: -3px; }
+  table.alerts tr.alert.open { background: var(--row-open); }
+  table.alerts tr.alert.open td { border-bottom-color: transparent; }
+  .mono { font-family: var(--mono); font-size: 16px; }
+  .time { white-space: nowrap; }
+  .caret { display: inline-block; width: 1em; color: var(--muted); }
+  .k { color: var(--muted); }
+  col.c-time { width: 9.2em; }
+  col.c-prio { width: 6.6em; }
+  col.c-rule { width: 20%; }
+  col.c-detail { width: 30%; }
+
+  .badge { display: inline-block; font-size: 14px; font-weight: 700; padding: 2px 9px; border-radius: 4px; color: #fff; background: #64748b; white-space: nowrap; }
+  .p-Emergency, .p-Alert, .p-Critical { background: #b91c1c; }
+  .p-Error { background: #c2410c; }
+  .p-Warning { background: #a16207; }
+  .p-Notice { background: #1d4ed8; }
+  .p-Informational, .p-Info { background: #475569; }
+  .p-Debug { background: #64748b; }
+  .dot.p-Emergency, .dot.p-Alert, .dot.p-Critical { background: #b91c1c; }
+  .dot.p-Error { background: #c2410c; }
+  .dot.p-Warning { background: #a16207; }
+  .dot.p-Notice { background: #1d4ed8; }
+
+  tr.detail td { background: var(--row-open); padding: 4px 16px 20px 40px; border-bottom: 2px solid var(--border); }
+  .detail h3 { font-size: 14px; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); margin: 10px 0 6px; }
+  .detail pre { margin: 0; padding: 12px 14px; background: #fff; border: 1px solid var(--border); border-radius: 5px; white-space: pre-wrap; overflow-wrap: anywhere; font: 16px/1.5 var(--mono); }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 16px; }
+  table.kv { border-collapse: collapse; background: #fff; border: 1px solid var(--border); border-radius: 5px; width: 100%; table-layout: fixed; }
+  table.kv td { padding: 5px 12px; border-bottom: 1px solid #e2e8f0; font: 16px/1.4 var(--mono); overflow-wrap: anywhere; vertical-align: top; }
+  table.kv td:first-child { color: var(--muted); width: 32%; }
+  table.kv tr:last-child td { border-bottom: none; }
+  .null { color: #94a3b8; font-style: italic; }
+  mark { background: var(--mark); color: inherit; padding: 0 1px; border-radius: 2px; }
+  .empty { padding: 28px; text-align: center; color: var(--muted); }
+  .foot { color: var(--muted); font-size: 14px; margin-top: 12px; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">Kestrel SOC · Falco alerts</div>
+  <div class="env">Signed in as <b>c.hasbrouck</b> · All times UTC</div>
+</header>
+
+<main>
+  <h1>Falco alerts · ci-runner-01</h1>
+  <p class="sub" id="sub"></p>
+
+  <div class="toolbar">
+    <div class="search">
+      <input id="q" type="search" placeholder="Filter: matches anywhere in an alert" autocomplete="off" spellcheck="false" aria-label="Filter alerts">
+      <button class="btn" id="clear" type="button">Clear</button>
+      <div class="count" id="count" aria-live="polite"></div>
+    </div>
+    <div class="group" id="prios"><span class="group-label">Priority</span></div>
+  </div>
+
+  <div class="tablewrap">
+    <table class="alerts">
+      <colgroup>
+        <col class="c-time"><col class="c-prio"><col class="c-rule"><col class="c-detail"><col class="c-cmd">
+      </colgroup>
+      <thead>
+        <tr><th>Time (UTC)</th><th>Priority</th><th>Rule</th><th>Key detail</th><th>Command</th></tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="empty" id="empty" hidden>No alerts match these filters.</div>
+  </div>
+  <p class="foot">Click a row to see the full alert. Source: Falco JSON output (falco.jsonl).</p>
+</main>
+
+<script>
+// Every alert from examples/evidence/host/falco.jsonl, unmodified except that
+// integers too large for a JS number (nanosecond timestamps) are kept as strings
+// so they display exactly.
+const ALERTS = [
+ {
+  "hostname": "ci-runner-01",
+  "output": "2026-09-29T14:53:21.341939490+0000: Notice Outbound connection from agent sandbox (connection=172.19.0.3:41878->172.19.0.2:8080 command=curl -s -w \\nHTTP %{http_code}\\n http://orders.internal:8080/health process=curl parent=timeout user=root container_id=57e6f530a89c container_name=inspect-ex-status-re-icupxox-default-1 image=lab/agent-sandbox:1) container_id=57e6f530a89c container_name=inspect-ex-status-re-icupxox-default-1 container_image_repository=lab/agent-sandbox container_image_tag=1 k8s_pod_name=<NA> k8s_ns_name=<NA>",
+  "output_fields": {
+   "container.id": "57e6f530a89c",
+   "container.image.repository": "lab/agent-sandbox",
+   "container.image.tag": "1",
+   "container.name": "inspect-ex-status-re-icupxox-default-1",
+   "evt.time.iso8601": "1790693601341939490",
+   "fd.name": "172.19.0.3:41878->172.19.0.2:8080",
+   "k8s.ns.name": null,
+   "k8s.pod.name": null,
+   "proc.cmdline": "curl -s -w \\nHTTP %{http_code}\\n http://orders.internal:8080/health",
+   "proc.name": "curl",
+   "proc.pname": "timeout",
+   "user.name": "root"
+  },
+  "priority": "Notice",
+  "rule": "Outbound connection from agent sandbox",
+  "source": "syscall",
+  "tags": [
+   "agent_sandbox",
+   "container",
+   "network"
+  ],
+  "time": "2026-09-29T14:53:21.341939490Z"
+ },
+ {
+  "hostname": "ci-runner-01",
+  "output": "2026-09-29T14:53:30.312878786+0000: Critical Executing binary not part of base image | proc_exe=/var/tmp/.da7be258e003d428/inspect-sandbox-tools proc_sname= gparent=containerd-shim proc_exe_ino_ctime=1790693610054159533 proc_exe_ino_mtime=1789985601592430000 proc_exe_ino_ctime_duration_proc_start=228201625 proc_cwd=/work/ container_start_ts=1790693592837992259 evt_type=execve user=root user_uid=0 user_loginuid=-1 process=inspect-sandbox proc_exepath=/var/tmp/.da7be258e003d428/inspect-sandbox-tools parent=runc command=inspect-sandbox start-server terminal=0 exe_flags=EXE_WRITABLE|EXE_UPPER_LAYER container_id=57e6f530a89c container_name=inspect-ex-status-re-icupxox-default-1 container_image_repository=lab/agent-sandbox container_image_tag=1 k8s_pod_name=<NA> k8s_ns_name=<NA>",
+  "output_fields": {
+   "container.id": "57e6f530a89c",
+   "container.image.repository": "lab/agent-sandbox",
+   "container.image.tag": "1",
+   "container.name": "inspect-ex-status-re-icupxox-default-1",
+   "container.start_ts": "1790693592837992259",
+   "evt.arg.flags": "EXE_WRITABLE|EXE_UPPER_LAYER",
+   "evt.time.iso8601": "1790693610312878786",
+   "evt.type": "execve",
+   "k8s.ns.name": null,
+   "k8s.pod.name": null,
+   "proc.aname[2]": "containerd-shim",
+   "proc.cmdline": "inspect-sandbox start-server",
+   "proc.cwd": "/work/",
+   "proc.exe": "/var/tmp/.da7be258e003d428/inspect-sandbox-tools",
+   "proc.exe_ino.ctime": "1790693610054159533",
+   "proc.exe_ino.ctime_duration_proc_start": 228201625,
+   "proc.exe_ino.mtime": "1789985601592430000",
+   "proc.exepath": "/var/tmp/.da7be258e003d428/inspect-sandbox-tools",
+   "proc.name": "inspect-sandbox",
+   "proc.pname": "runc",
+   "proc.sname": "",
+   "proc.tty": 0,
+   "user.loginuid": -1,
+   "user.name": "root",
+   "user.uid": 0
+  },
+  "priority": "Critical",
+  "rule": "Drop and execute new binary in container",
+  "source": "syscall",
+  "tags": [
+   "PCI_DSS_11.5.1",
+   "TA0003",
+   "container",
+   "maturity_stable",
+   "mitre_persistence",
+   "process"
+  ],
+  "time": "2026-09-29T14:53:30.312878786Z"
+ },
+ {
+  "hostname": "ci-runner-01",
+  "output": "2026-09-29T14:53:30.314502460+0000: Critical Executing binary not part of base image | proc_exe=/var/tmp/.da7be258e003d428/inspect-sandbox-tools proc_sname= gparent=<NA> proc_exe_ino_ctime=1790693610054159533 proc_exe_ino_mtime=1789985601592430000 proc_exe_ino_ctime_duration_proc_start=228201625 proc_cwd=/work/ container_start_ts=1790693592837992259 evt_type=execve user=root user_uid=0 user_loginuid=-1 process=inspect-sandbox proc_exepath=/var/tmp/.da7be258e003d428/inspect-sandbox-tools parent=containerd-shim command=inspect-sandbox start-server terminal=0 exe_flags=EXE_WRITABLE|EXE_UPPER_LAYER container_id=57e6f530a89c container_name=inspect-ex-status-re-icupxox-default-1 container_image_repository=lab/agent-sandbox container_image_tag=1 k8s_pod_name=<NA> k8s_ns_name=<NA>",
+  "output_fields": {
+   "container.id": "57e6f530a89c",
+   "container.image.repository": "lab/agent-sandbox",
+   "container.image.tag": "1",
+   "container.name": "inspect-ex-status-re-icupxox-default-1",
+   "container.start_ts": "1790693592837992259",
+   "evt.arg.flags": "EXE_WRITABLE|EXE_UPPER_LAYER",
+   "evt.time.iso8601": "1790693610314502460",
+   "evt.type": "execve",
+   "k8s.ns.name": null,
+   "k8s.pod.name": null,
+   "proc.aname[2]": null,
+   "proc.cmdline": "inspect-sandbox start-server",
+   "proc.cwd": "/work/",
+   "proc.exe": "/var/tmp/.da7be258e003d428/inspect-sandbox-tools",
+   "proc.exe_ino.ctime": "1790693610054159533",
+   "proc.exe_ino.ctime_duration_proc_start": 228201625,
+   "proc.exe_ino.mtime": "1789985601592430000",
+   "proc.exepath": "/var/tmp/.da7be258e003d428/inspect-sandbox-tools",
+   "proc.name": "inspect-sandbox",
+   "proc.pname": "containerd-shim",
+   "proc.sname": "",
+   "proc.tty": 0,
+   "user.loginuid": -1,
+   "user.name": "root",
+   "user.uid": 0
+  },
+  "priority": "Critical",
+  "rule": "Drop and execute new binary in container",
+  "source": "syscall",
+  "tags": [
+   "PCI_DSS_11.5.1",
+   "TA0003",
+   "container",
+   "maturity_stable",
+   "mitre_persistence",
+   "process"
+  ],
+  "time": "2026-09-29T14:53:30.314502460Z"
+ },
+ {
+  "hostname": "ci-runner-01",
+  "output": "2026-09-29T14:53:30.902256072+0000: Critical Executing binary not part of base image | proc_exe=/var/tmp/.da7be258e003d428/inspect-sandbox-tools proc_sname=inspect-sandbox gparent=containerd-shim proc_exe_ino_ctime=1790693610054159533 proc_exe_ino_mtime=1789985601592430000 proc_exe_ino_ctime_duration_proc_start=847773888 proc_cwd=/work/ container_start_ts=1790693592837992259 evt_type=execve user=root user_uid=0 user_loginuid=-1 process=inspect-sandbox proc_exepath=/var/tmp/.da7be258e003d428/inspect-sandbox-tools parent=inspect-sandbox command=inspect-sandbox server terminal=0 exe_flags=EXE_WRITABLE|EXE_UPPER_LAYER container_id=57e6f530a89c container_name=inspect-ex-status-re-icupxox-default-1 container_image_repository=lab/agent-sandbox container_image_tag=1 k8s_pod_name=<NA> k8s_ns_name=<NA>",
+  "output_fields": {
+   "container.id": "57e6f530a89c",
+   "container.image.repository": "lab/agent-sandbox",
+   "container.image.tag": "1",
+   "container.name": "inspect-ex-status-re-icupxox-default-1",
+   "container.start_ts": "1790693592837992259",
+   "evt.arg.flags": "EXE_WRITABLE|EXE_UPPER_LAYER",
+   "evt.time.iso8601": "1790693610902256072",
+   "evt.type": "execve",
+   "k8s.ns.name": null,
+   "k8s.pod.name": null,
+   "proc.aname[2]": "containerd-shim",
+   "proc.cmdline": "inspect-sandbox server",
+   "proc.cwd": "/work/",
+   "proc.exe": "/var/tmp/.da7be258e003d428/inspect-sandbox-tools",
+   "proc.exe_ino.ctime": "1790693610054159533",
+   "proc.exe_ino.ctime_duration_proc_start": 847773888,
+   "proc.exe_ino.mtime": "1789985601592430000",
+   "proc.exepath": "/var/tmp/.da7be258e003d428/inspect-sandbox-tools",
+   "proc.name": "inspect-sandbox",
+   "proc.pname": "inspect-sandbox",
+   "proc.sname": "inspect-sandbox",
+   "proc.tty": 0,
+   "user.loginuid": -1,
+   "user.name": "root",
+   "user.uid": 0
+  },
+  "priority": "Critical",
+  "rule": "Drop and execute new binary in container",
+  "source": "syscall",
+  "tags": [
+   "PCI_DSS_11.5.1",
+   "TA0003",
+   "container",
+   "maturity_stable",
+   "mitre_persistence",
+   "process"
+  ],
+  "time": "2026-09-29T14:53:30.902256072Z"
+ },
+ {
+  "hostname": "ci-runner-01",
+  "output": "2026-09-29T14:53:30.904124314+0000: Critical Executing binary not part of base image | proc_exe=/var/tmp/.da7be258e003d428/inspect-sandbox-tools proc_sname=inspect-sandbox gparent=containerd-shim proc_exe_ino_ctime=1790693610054159533 proc_exe_ino_mtime=1789985601592430000 proc_exe_ino_ctime_duration_proc_start=847773888 proc_cwd=/work/ container_start_ts=1790693592837992259 evt_type=execve user=root user_uid=0 user_loginuid=-1 process=inspect-sandbox proc_exepath=/var/tmp/.da7be258e003d428/inspect-sandbox-tools parent=inspect-sandbox command=inspect-sandbox server terminal=0 exe_flags=EXE_WRITABLE|EXE_UPPER_LAYER container_id=57e6f530a89c container_name=inspect-ex-status-re-icupxox-default-1 container_image_repository=lab/agent-sandbox container_image_tag=1 k8s_pod_name=<NA> k8s_ns_name=<NA>",
+  "output_fields": {
+   "container.id": "57e6f530a89c",
+   "container.image.repository": "lab/agent-sandbox",
+   "container.image.tag": "1",
+   "container.name": "inspect-ex-status-re-icupxox-default-1",
+   "container.start_ts": "1790693592837992259",
+   "evt.arg.flags": "EXE_WRITABLE|EXE_UPPER_LAYER",
+   "evt.time.iso8601": "1790693610904124314",
+   "evt.type": "execve",
+   "k8s.ns.name": null,
+   "k8s.pod.name": null,
+   "proc.aname[2]": "containerd-shim",
+   "proc.cmdline": "inspect-sandbox server",
+   "proc.cwd": "/work/",
+   "proc.exe": "/var/tmp/.da7be258e003d428/inspect-sandbox-tools",
+   "proc.exe_ino.ctime": "1790693610054159533",
+   "proc.exe_ino.ctime_duration_proc_start": 847773888,
+   "proc.exe_ino.mtime": "1789985601592430000",
+   "proc.exepath": "/var/tmp/.da7be258e003d428/inspect-sandbox-tools",
+   "proc.name": "inspect-sandbox",
+   "proc.pname": "inspect-sandbox",
+   "proc.sname": "inspect-sandbox",
+   "proc.tty": 0,
+   "user.loginuid": -1,
+   "user.name": "root",
+   "user.uid": 0
+  },
+  "priority": "Critical",
+  "rule": "Drop and execute new binary in container",
+  "source": "syscall",
+  "tags": [
+   "PCI_DSS_11.5.1",
+   "TA0003",
+   "container",
+   "maturity_stable",
+   "mitre_persistence",
+   "process"
+  ],
+  "time": "2026-09-29T14:53:30.904124314Z"
+ },
+ {
+  "hostname": "ci-runner-01",
+  "output": "2026-09-29T14:53:31.855580224+0000: Critical Executing binary not part of base image | proc_exe=/var/tmp/.da7be258e003d428/inspect-sandbox-tools proc_sname=timeout gparent=containerd-shim proc_exe_ino_ctime=1790693610054159533 proc_exe_ino_mtime=1789985601592430000 proc_exe_ino_ctime_duration_proc_start=1801183713 proc_cwd=/work/ container_start_ts=1790693592837992259 evt_type=execve user=root user_uid=0 user_loginuid=-1 process=inspect-sandbox proc_exepath=/var/tmp/.da7be258e003d428/inspect-sandbox-tools parent=timeout command=inspect-sandbox exec terminal=0 exe_flags=EXE_WRITABLE|EXE_UPPER_LAYER container_id=57e6f530a89c container_name=inspect-ex-status-re-icupxox-default-1 container_image_repository=lab/agent-sandbox container_image_tag=1 k8s_pod_name=<NA> k8s_ns_name=<NA>",
+  "output_fields": {
+   "container.id": "57e6f530a89c",
+   "container.image.repository": "lab/agent-sandbox",
+   "container.image.tag": "1",
+   "container.name": "inspect-ex-status-re-icupxox-default-1",
+   "container.start_ts": "1790693592837992259",
+   "evt.arg.flags": "EXE_WRITABLE|EXE_UPPER_LAYER",
+   "evt.time.iso8601": "1790693611855580224",
+   "evt.type": "execve",
+   "k8s.ns.name": null,
+   "k8s.pod.name": null,
+   "proc.aname[2]": "containerd-shim",
+   "proc.cmdline": "inspect-sandbox exec",
+   "proc.cwd": "/work/",
+   "proc.exe": "/var/tmp/.da7be258e003d428/inspect-sandbox-tools",
+   "proc.exe_ino.ctime": "1790693610054159533",
+   "proc.exe_ino.ctime_duration_proc_start": 1801183713,
+   "proc.exe_ino.mtime": "1789985601592430000",
+   "proc.exepath": "/var/tmp/.da7be258e003d428/inspect-sandbox-tools",
+   "proc.name": "inspect-sandbox",
+   "proc.pname": "timeout",
+   "proc.sname": "timeout",
+   "proc.tty": 0,
+   "user.loginuid": -1,
+   "user.name": "root",
+   "user.uid": 0
+  },
+  "priority": "Critical",
+  "rule": "Drop and execute new binary in container",
+  "source": "syscall",
+  "tags": [
+   "PCI_DSS_11.5.1",
+   "TA0003",
+   "container",
+   "maturity_stable",
+   "mitre_persistence",
+   "process"
+  ],
+  "time": "2026-09-29T14:53:31.855580224Z"
+ },
+ {
+  "hostname": "ci-runner-01",
+  "output": "2026-09-29T14:53:31.856884335+0000: Critical Executing binary not part of base image | proc_exe=/var/tmp/.da7be258e003d428/inspect-sandbox-tools proc_sname=timeout gparent=containerd-shim proc_exe_ino_ctime=1790693610054159533 proc_exe_ino_mtime=1789985601592430000 proc_exe_ino_ctime_duration_proc_start=1801183713 proc_cwd=/work/ container_start_ts=1790693592837992259 evt_type=execve user=root user_uid=0 user_loginuid=-1 process=inspect-sandbox proc_exepath=/var/tmp/.da7be258e003d428/inspect-sandbox-tools parent=timeout command=inspect-sandbox exec terminal=0 exe_flags=EXE_WRITABLE|EXE_UPPER_LAYER container_id=57e6f530a89c container_name=inspect-ex-status-re-icupxox-default-1 container_image_repository=lab/agent-sandbox container_image_tag=1 k8s_pod_name=<NA> k8s_ns_name=<NA>",
+  "output_fields": {
+   "container.id": "57e6f530a89c",
+   "container.image.repository": "lab/agent-sandbox",
+   "container.image.tag": "1",
+   "container.name": "inspect-ex-status-re-icupxox-default-1",
+   "container.start_ts": "1790693592837992259",
+   "evt.arg.flags": "EXE_WRITABLE|EXE_UPPER_LAYER",
+   "evt.time.iso8601": "1790693611856884335",
+   "evt.type": "execve",
+   "k8s.ns.name": null,
+   "k8s.pod.name": null,
+   "proc.aname[2]": "containerd-shim",
+   "proc.cmdline": "inspect-sandbox exec",
+   "proc.cwd": "/work/",
+   "proc.exe": "/var/tmp/.da7be258e003d428/inspect-sandbox-tools",
+   "proc.exe_ino.ctime": "1790693610054159533",
+   "proc.exe_ino.ctime_duration_proc_start": 1801183713,
+   "proc.exe_ino.mtime": "1789985601592430000",
+   "proc.exepath": "/var/tmp/.da7be258e003d428/inspect-sandbox-tools",
+   "proc.name": "inspect-sandbox",
+   "proc.pname": "timeout",
+   "proc.sname": "timeout",
+   "proc.tty": 0,
+   "user.loginuid": -1,
+   "user.name": "root",
+   "user.uid": 0
+  },
+  "priority": "Critical",
+  "rule": "Drop and execute new binary in container",
+  "source": "syscall",
+  "tags": [
+   "PCI_DSS_11.5.1",
+   "TA0003",
+   "container",
+   "maturity_stable",
+   "mitre_persistence",
+   "process"
+  ],
+  "time": "2026-09-29T14:53:31.856884335Z"
+ },
+ {
+  "hostname": "ci-runner-01",
+  "output": "2026-09-29T14:53:32.294085281+0000: Notice Write to host-mounted path from agent sandbox (file=/output/status.txt command=inspect-sandbox exec process=inspect-sandbox parent=timeout user=root container_id=57e6f530a89c container_name=inspect-ex-status-re-icupxox-default-1 image=lab/agent-sandbox:1) container_id=57e6f530a89c container_name=inspect-ex-status-re-icupxox-default-1 container_image_repository=lab/agent-sandbox container_image_tag=1 k8s_pod_name=<NA> k8s_ns_name=<NA>",
+  "output_fields": {
+   "container.id": "57e6f530a89c",
+   "container.image.repository": "lab/agent-sandbox",
+   "container.image.tag": "1",
+   "container.name": "inspect-ex-status-re-icupxox-default-1",
+   "evt.time.iso8601": "1790693612294085281",
+   "fd.name": "/output/status.txt",
+   "k8s.ns.name": null,
+   "k8s.pod.name": null,
+   "proc.cmdline": "inspect-sandbox exec",
+   "proc.name": "inspect-sandbox",
+   "proc.pname": "timeout",
+   "user.name": "root"
+  },
+  "priority": "Notice",
+  "rule": "Write to host-mounted path from agent sandbox",
+  "source": "syscall",
+  "tags": [
+   "agent_sandbox",
+   "container",
+   "filesystem"
+  ],
+  "time": "2026-09-29T14:53:32.294085281Z"
+ },
+ {
+  "hostname": "ci-runner-01",
+  "output": "2026-09-29T14:54:53.082517705+0000: Notice Write to host-mounted path from agent sandbox (file=/output/app-1.4.2.tar.gz command=cp dist/app-1.4.2.tar.gz dist/app-1.4.2.sha256 dist/app-1.4.2.sbom.json /output/ process=cp parent=timeout user=root container_id=1f341c86d93b container_name=inspect-ex-copy-arti-imhsebz-default-1 image=lab/agent-sandbox:1) container_id=1f341c86d93b container_name=inspect-ex-copy-arti-imhsebz-default-1 container_image_repository=lab/agent-sandbox container_image_tag=1 k8s_pod_name=<NA> k8s_ns_name=<NA>",
+  "output_fields": {
+   "container.id": "1f341c86d93b",
+   "container.image.repository": "lab/agent-sandbox",
+   "container.image.tag": "1",
+   "container.name": "inspect-ex-copy-arti-imhsebz-default-1",
+   "evt.time.iso8601": "1790693693082517705",
+   "fd.name": "/output/app-1.4.2.tar.gz",
+   "k8s.ns.name": null,
+   "k8s.pod.name": null,
+   "proc.cmdline": "cp dist/app-1.4.2.tar.gz dist/app-1.4.2.sha256 dist/app-1.4.2.sbom.json /output/",
+   "proc.name": "cp",
+   "proc.pname": "timeout",
+   "user.name": "root"
+  },
+  "priority": "Notice",
+  "rule": "Write to host-mounted path from agent sandbox",
+  "source": "syscall",
+  "tags": [
+   "agent_sandbox",
+   "container",
+   "filesystem"
+  ],
+  "time": "2026-09-29T14:54:53.082517705Z"
+ },
+ {
+  "hostname": "ci-runner-01",
+  "output": "2026-09-29T14:54:53.082611462+0000: Notice Write to host-mounted path from agent sandbox (file=/output/app-1.4.2.sha256 command=cp dist/app-1.4.2.tar.gz dist/app-1.4.2.sha256 dist/app-1.4.2.sbom.json /output/ process=cp parent=timeout user=root container_id=1f341c86d93b container_name=inspect-ex-copy-arti-imhsebz-default-1 image=lab/agent-sandbox:1) container_id=1f341c86d93b container_name=inspect-ex-copy-arti-imhsebz-default-1 container_image_repository=lab/agent-sandbox container_image_tag=1 k8s_pod_name=<NA> k8s_ns_name=<NA>",
+  "output_fields": {
+   "container.id": "1f341c86d93b",
+   "container.image.repository": "lab/agent-sandbox",
+   "container.image.tag": "1",
+   "container.name": "inspect-ex-copy-arti-imhsebz-default-1",
+   "evt.time.iso8601": "1790693693082611462",
+   "fd.name": "/output/app-1.4.2.sha256",
+   "k8s.ns.name": null,
+   "k8s.pod.name": null,
+   "proc.cmdline": "cp dist/app-1.4.2.tar.gz dist/app-1.4.2.sha256 dist/app-1.4.2.sbom.json /output/",
+   "proc.name": "cp",
+   "proc.pname": "timeout",
+   "user.name": "root"
+  },
+  "priority": "Notice",
+  "rule": "Write to host-mounted path from agent sandbox",
+  "source": "syscall",
+  "tags": [
+   "agent_sandbox",
+   "container",
+   "filesystem"
+  ],
+  "time": "2026-09-29T14:54:53.082611462Z"
+ }
+];
+
+const PRIORITY_ORDER = ["Emergency", "Alert", "Critical", "Error", "Warning", "Notice", "Informational", "Info", "Debug"];
+
+ALERTS.sort((a, b) => (a.time < b.time ? -1 : a.time > b.time ? 1 : 0));
+
+const state = { q: "", prios: new Set(), open: new Set() };
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+// Escape text and wrap case-insensitive matches of the current filter in <mark>.
+function hl(text) {
+  text = String(text);
+  const q = state.q;
+  if (!q) return esc(text);
+  const lower = text.toLowerCase(), ql = q.toLowerCase();
+  let out = "", i = 0, j;
+  while ((j = lower.indexOf(ql, i)) !== -1) {
+    out += esc(text.slice(i, j)) + "<mark>" + esc(text.slice(j, j + q.length)) + "</mark>";
+    i = j + q.length;
+  }
+  return out + esc(text.slice(i));
+}
+
+function fmtVal(v) {
+  if (v === null || v === undefined) return '<span class="null">null</span>';
+  return hl(v);
+}
+
+function timeMs(a) { return a.time.slice(11, 23); }            // HH:MM:SS.mmm (truncated)
+
+function keyDetail(a) {
+  const f = a.output_fields;
+  if (f["fd.name"] != null) {
+    const isConn = f["fd.name"].includes("->");
+    return [isConn ? "connection=" : "file=", f["fd.name"]];
+  }
+  if (f["proc.exe"] != null) return ["proc_exe=", f["proc.exe"]];
+  return ["", ""];
+}
+
+function haystack(a) {
+  const parts = [a.time, a.priority, a.rule, a.hostname, a.source, a.output, (a.tags || []).join(" ")];
+  for (const [k, v] of Object.entries(a.output_fields || {})) parts.push(k + "=" + v);
+  return parts.join("\n").toLowerCase();
+}
+ALERTS.forEach(a => { a._hay = haystack(a); });
+
+function matches(a) {
+  if (state.q && !a._hay.includes(state.q.toLowerCase())) return false;
+  if (!state.prios.has(a.priority)) return false;
+  return true;
+}
+
+// ----- controls -----
+const priosPresent = [...new Set(ALERTS.map(a => a.priority))]
+  .sort((a, b) => PRIORITY_ORDER.indexOf(a) - PRIORITY_ORDER.indexOf(b));
+priosPresent.forEach(p => state.prios.add(p));
+
+const priosEl = document.getElementById("prios");
+priosPresent.forEach(p => {
+  const n = ALERTS.filter(a => a.priority === p).length;
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "chip";
+  b.setAttribute("aria-pressed", "true");
+  b.innerHTML = `<span class="dot p-${esc(p)}"></span>${esc(p)} <span class="k">(${n})</span>`;
+  b.addEventListener("click", () => {
+    if (state.prios.has(p)) state.prios.delete(p); else state.prios.add(p);
+    b.setAttribute("aria-pressed", String(state.prios.has(p)));
+    render();
+  });
+  priosEl.appendChild(b);
+});
+
+
+const qEl = document.getElementById("q");
+qEl.addEventListener("input", () => { state.q = qEl.value.trim(); render(); });
+qEl.addEventListener("keydown", e => { if (e.key === "Escape") { qEl.value = ""; state.q = ""; render(); } });
+document.getElementById("clear").addEventListener("click", () => {
+  qEl.value = ""; state.q = "";
+  priosPresent.forEach(p => state.prios.add(p));
+  priosEl.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", "true"));
+  render(); qEl.focus();
+});
+
+// Subtitle from the data itself.
+(function () {
+  const hosts = [...new Set(ALERTS.map(a => a.hostname))];
+  const dates = [...new Set(ALERTS.map(a => a.time.slice(0, 10)))];
+  const first = ALERTS[0], last = ALERTS[ALERTS.length - 1];
+  document.getElementById("sub").textContent =
+    `${ALERTS.length} alerts · host ${hosts.join(", ")} · ${dates.join(", ")} · ${timeMs(first)} to ${timeMs(last)} UTC`;
+})();
+
+// Preset filter from the URL, e.g. falco.html#q=<text>
+function applyHash() {
+  const h = new URLSearchParams(location.hash.slice(1));
+  const q = h.get("q");
+  if (q !== null) { qEl.value = q; state.q = q.trim(); }
+}
+applyHash();
+window.addEventListener("hashchange", () => { applyHash(); render(); });
+
+// ----- table -----
+const rowsEl = document.getElementById("rows");
+
+function detailHtml(a) {
+  const f = a.output_fields || {};
+  const kv = Object.keys(f).sort().map(k => `<tr><td>${hl(k)}</td><td>${fmtVal(f[k])}</td></tr>`).join("");
+  return `<div class="detail">
+    <h3>Alert</h3>
+    <div class="meta">
+      <span><span class="k">time</span> <span class="mono">${hl(a.time)}</span></span>
+      <span><span class="k">hostname</span> <span class="mono">${hl(a.hostname)}</span></span>
+      <span><span class="k">source</span> <span class="mono">${hl(a.source)}</span></span>
+      <span><span class="k">tags</span> <span class="mono">${hl((a.tags || []).join(", "))}</span></span>
+    </div>
+    <h3>Raw output</h3>
+    <pre>${hl(a.output)}</pre>
+    <h3>Output fields</h3>
+    <table class="kv">${kv}</table>
+  </div>`;
+}
+
+function render() {
+  const shown = ALERTS.map((a, i) => [a, i]).filter(([a]) => matches(a));
+  let html = "";
+  for (const [a, i] of shown) {
+    const open = state.open.has(i);
+    const [dk, dv] = keyDetail(a);
+    html += `<tr class="alert${open ? " open" : ""}" data-i="${i}" tabindex="0" aria-expanded="${open}">
+      <td class="mono time"><span class="caret">${open ? "▾" : "▸"}</span>${hl(timeMs(a))}</td>
+      <td><span class="badge p-${esc(a.priority)}">${hl(a.priority)}</span></td>
+      <td>${hl(a.rule)}</td>
+      <td class="mono"><span class="k">${esc(dk)}</span>${hl(dv)}</td>
+      <td class="mono">${hl(a.output_fields["proc.cmdline"] || "")}</td>
+    </tr>`;
+    if (open) html += `<tr class="detail"><td colspan="5">${detailHtml(a)}</td></tr>`;
+  }
+  rowsEl.innerHTML = html;
+  document.getElementById("empty").hidden = shown.length > 0;
+  document.getElementById("count").textContent = `${shown.length} of ${ALERTS.length} alerts`;
+}
+
+function toggle(tr) {
+  const i = Number(tr.dataset.i);
+  if (state.open.has(i)) state.open.delete(i); else state.open.add(i);
+  render();
+  const again = rowsEl.querySelector(`tr.alert[data-i="${i}"]`);
+  if (again) again.focus({ preventScroll: true });
+}
+rowsEl.addEventListener("click", e => {
+  const tr = e.target.closest("tr.alert");
+  if (tr && !window.getSelection().toString()) toggle(tr);
+});
+rowsEl.addEventListener("keydown", e => {
+  const tr = e.target.closest("tr.alert");
+  if (tr && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); toggle(tr); }
+});
+
+render();
+</script>
+</body>
+</html>

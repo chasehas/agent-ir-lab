@@ -1,0 +1,8 @@
+# A properly isolated sandbox: no network, no host mounts.
+services:
+  default:
+    build: .
+    image: agent-ir-lab/example-python:1
+    init: true
+    command: tail -f /dev/null
+    network_mode: none

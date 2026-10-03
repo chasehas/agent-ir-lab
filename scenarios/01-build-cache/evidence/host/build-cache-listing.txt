@@ -1,0 +1,6 @@
+total 20
+drwxr-xr-x 3 root root 4096 Sep 29 12:59 .
+drwxr-xr-x 3 root root 4096 Sep 29 12:59 ..
+-rw-r--r-- 1 root root  122 Sep 29 12:59 .env
+drwxr-xr-x 2 root root 4096 Sep 29 12:59 pip
+-rw-r--r-- 1 root root  153 Sep 29 13:04 rates.json

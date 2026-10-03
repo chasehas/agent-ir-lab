@@ -1,0 +1,222 @@
+[
+    {
+        "Id": "1f341c86d93bc7f27d4c3f32d5985da879e207ceb866d82243425fd2cf0d6c33",
+        "Created": "2026-09-29T14:54:45.84615994Z",
+        "Path": "tail",
+        "Args": [
+            "-f",
+            "/dev/null"
+        ],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 14536,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-09-29T14:54:45.879309399Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+        },
+        "Image": "sha256:c0b5e5be918e1c2d7f39aa517361f9eed1cd0624f2d61a3a64fa57ebca74e0df",
+        "ResolvConfPath": "/var/lib/docker/containers/1f341c86d93bc7f27d4c3f32d5985da879e207ceb866d82243425fd2cf0d6c33/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/1f341c86d93bc7f27d4c3f32d5985da879e207ceb866d82243425fd2cf0d6c33/hostname",
+        "HostsPath": "/var/lib/docker/containers/1f341c86d93bc7f27d4c3f32d5985da879e207ceb866d82243425fd2cf0d6c33/hosts",
+        "LogPath": "/var/lib/docker/containers/1f341c86d93bc7f27d4c3f32d5985da879e207ceb866d82243425fd2cf0d6c33/1f341c86d93bc7f27d4c3f32d5985da879e207ceb866d82243425fd2cf0d6c33-json.log",
+        "Name": "/inspect-ex-copy-arti-imhsebz-default-1",
+        "RestartCount": 0,
+        "Driver": "overlayfs",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": [
+                "/srv/agent-output:/output:rw"
+            ],
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "none",
+            "PortBindings": {},
+            "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "host",
+            "Dns": null,
+            "DnsOptions": null,
+            "DnsSearch": null,
+            "ExtraHosts": [],
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": null,
+            "BlkioDeviceReadBps": null,
+            "BlkioDeviceWriteBps": null,
+            "BlkioDeviceReadIOps": null,
+            "BlkioDeviceWriteIOps": null,
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": null,
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": false,
+            "PidsLimit": null,
+            "Ulimits": null,
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/sys/devices/virtual/powercap",
+                "/sys/firmware"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ],
+            "Init": true
+        },
+        "Storage": {
+            "RootFS": {
+                "Snapshot": {
+                    "Name": "overlayfs"
+                }
+            }
+        },
+        "Mounts": [
+            {
+                "Type": "bind",
+                "Source": "/srv/agent-output",
+                "Destination": "/output",
+                "Mode": "rw",
+                "RW": true,
+                "Propagation": "rprivate"
+            }
+        ],
+        "Config": {
+            "Hostname": "1f341c86d93b",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": true,
+            "AttachStderr": true,
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "LANG=C.UTF-8",
+                "GPG_KEY=7169605F62C751356D054A26A821E680E5FA6305",
+                "PYTHON_VERSION=3.12.14",
+                "PYTHON_SHA256=5c8462af5790baf43a321a1559dbe0db06d1be4300fb85fb53c40060668e548a"
+            ],
+            "Cmd": [
+                "tail",
+                "-f",
+                "/dev/null"
+            ],
+            "Image": "lab/agent-sandbox:1",
+            "Volumes": null,
+            "WorkingDir": "/work",
+            "Entrypoint": null,
+            "Labels": {
+                "com.docker.compose.config-hash": "0472ab72daa1f570fc00074075d4598361827264dca9a3f8715bd0a2e0243cbb",
+                "com.docker.compose.container-number": "1",
+                "com.docker.compose.depends_on": "",
+                "com.docker.compose.image": "sha256:c0b5e5be918e1c2d7f39aa517361f9eed1cd0624f2d61a3a64fa57ebca74e0df",
+                "com.docker.compose.oneoff": "False",
+                "com.docker.compose.project": "inspect-ex-copy-arti-imhsebz",
+                "com.docker.compose.project.config_files": "/opt/agent-jobs/compose-output.yaml",
+                "com.docker.compose.project.working_dir": "/opt/agent-jobs",
+                "com.docker.compose.service": "default",
+                "com.docker.compose.version": "5.1.1"
+            }
+        },
+        "NetworkSettings": {
+            "SandboxID": "0f164852ebd022a8c97535ac9ec98f3a50d0e1d5fbac198fad9fed1cbbf8d155",
+            "SandboxKey": "/var/run/docker/netns/0f164852ebd0",
+            "Ports": {},
+            "Networks": {
+                "none": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": null,
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "d7b888fa8c28b953232b57ccf9f224035e02755bbac45cc952b955b86c0d31ff",
+                    "EndpointID": "32bd513a58ad42ef831b024ccd7b0009d77260486fcbd1fe50407f1cefc4fa4a",
+                    "Gateway": "",
+                    "IPAddress": "",
+                    "MacAddress": "",
+                    "IPPrefixLen": 0,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": null
+                }
+            }
+        },
+        "ImageManifestDescriptor": {
+            "mediaType": "application/vnd.oci.image.manifest.v1+json",
+            "digest": "sha256:80127111b0679da657fd54ef9bbf5bb1bcc84ab87c8f7245b8bb9389411ca39f",
+            "size": 1434,
+            "platform": {
+                "architecture": "amd64",
+                "os": "linux"
+            }
+        }
+    }
+]

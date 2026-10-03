@@ -1,0 +1,15 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Inspect scratch output
+logs/
+
+# Capture output (raw, unfiltered)
+scenarios/*/build/out/
+scenarios/*/build/captures/
+scenarios/*/build/falco/nomemlock.so
+examples/build/out/
+examples/build/captures/
+examples/build/fixtures/

@@ -1,0 +1,32 @@
+# Kestrel's custom Falco rules for agent sandboxes.
+# Loaded after Falco's default rules, so default macros (e.g. open_write) are available.
+
+- macro: agent_sandbox
+  condition: container.image.repository = "kestrel/agent-sandbox"
+
+- rule: Outbound connection from agent sandbox
+  desc: A process in an agent sandbox container connected to another host. Agent sandboxes should have no network.
+  condition: >
+    evt.type = connect and agent_sandbox
+    and fd.typechar = 4
+    and not fd.snet in ("127.0.0.0/8")
+  output: >
+    Outbound connection from agent sandbox
+    (connection=%fd.name command=%proc.cmdline process=%proc.name parent=%proc.pname
+    user=%user.name container_id=%container.id container_name=%container.name
+    image=%container.image.repository:%container.image.tag)
+  priority: WARNING
+  tags: [agent_sandbox, network, container]
+
+- rule: Write to host-mounted path from agent sandbox
+  desc: A process in an agent sandbox container wrote to a path that is mounted from the host.
+  condition: >
+    open_write and agent_sandbox
+    and fd.name startswith /mnt/
+  output: >
+    Write to host-mounted path from agent sandbox
+    (file=%fd.name command=%proc.cmdline process=%proc.name parent=%proc.pname
+    user=%user.name container_id=%container.id container_name=%container.name
+    image=%container.image.repository:%container.image.tag)
+  priority: WARNING
+  tags: [agent_sandbox, filesystem, container]

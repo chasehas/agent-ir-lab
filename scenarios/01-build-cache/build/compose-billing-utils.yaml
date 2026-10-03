@@ -1,0 +1,18 @@
+# Sandbox for billing-utils jobs.
+# Mounts the shared build cache so pip doesn't re-download every run.
+services:
+  default:
+    image: kestrel/agent-sandbox:1
+    init: true
+    command: tail -f /dev/null
+    working_dir: /repo
+    volumes:
+      - ${BUILD_CACHE_DIR:-/srv/build-cache}:/mnt/cache
+    environment:
+      PIP_CACHE_DIR: /mnt/cache/pip
+    networks:
+      - ci
+
+networks:
+  ci:
+    external: true

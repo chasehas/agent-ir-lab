@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live response · ci-runner-01</title>
+<style>
+  :root {
+    --bg: #eef1f4;
+    --text: #0f172a;
+    --muted: #475569;
+    --topbar: #1e293b;
+    --topbar-text: #f8fafc;
+    --term-bg: #0b1220;
+    --term-text: #e2e8f0;
+    --term-prompt: #4ade80;
+    --term-path: #60a5fa;
+    --mono: Consolas, "Cascadia Mono", "SF Mono", Menlo, "Liberation Mono", monospace;
+    --sans: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--bg); color: var(--text); font: 17px/1.45 var(--sans); }
+
+  .topbar { background: var(--topbar); color: var(--topbar-text); display: flex; align-items: center; gap: 28px; padding: 0 24px; height: 54px; }
+  .brand { font-weight: 700; font-size: 19px; letter-spacing: .2px; }
+  .topbar .env { margin-left: auto; color: #cbd5e1; font-size: 15px; }
+  .topbar .env b { color: #fff; font-weight: 600; }
+
+  main { padding: 20px 24px 40px; }
+  h1 { font-size: 24px; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 16px; }
+
+  .term { background: var(--term-bg); color: var(--term-text); border-radius: 8px; border: 1px solid #1e293b; overflow: hidden; box-shadow: 0 4px 18px rgba(15, 23, 42, .25); }
+  .term-bar { display: flex; align-items: center; gap: 12px; padding: 9px 14px; background: #1e293b; color: #cbd5e1; font-size: 15px; }
+  .term-bar .dot { width: 11px; height: 11px; border-radius: 50%; background: #22c55e; }
+  .term-bar .hint { margin-left: auto; color: #94a3b8; }
+  .screen { padding: 18px 20px 24px; min-height: 420px; font: 20px/1.5 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; outline: none; }
+  .p-user { color: var(--term-prompt); font-weight: 700; }
+  .p-path { color: var(--term-path); font-weight: 700; }
+  .cursor { display: inline-block; width: .6em; height: 1.1em; vertical-align: text-bottom; background: var(--term-text); animation: blink 1s steps(1) infinite; }
+  .sys { color: #94a3b8; }
+  @keyframes blink { 50% { opacity: 0; } }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">Kestrel SOC · Live response</div>
+  <div class="env">Signed in as <b>c.hasbrouck</b> · All times UTC</div>
+</header>
+
+<main>
+  <h1>Live response · ci-runner-01</h1>
+  <p class="sub" id="sub"></p>
+
+  <div class="term">
+    <div class="term-bar"><span class="dot"></span><span>ci-runner-01 · remote shell</span><span class="hint" id="hint">Press Enter to run</span></div>
+    <div class="screen" id="screen" tabindex="0" aria-live="polite"></div>
+  </div>
+</main>
+
+<script>
+// Output is examples/evidence/host/agent-output-listing.txt, verbatim.
+const LISTING = "total 20\ndrwxr-xr-x 2 root root 4096 Sep 29 14:54 .\ndrwxr-xr-x 4 root root 4096 Sep 29 14:51 ..\n-rw-r--r-- 1 root root   83 Sep 29 14:54 app-1.4.2.sha256\n-rw-r--r-- 1 root root  151 Sep 29 14:54 app-1.4.2.tar.gz\n-rw-r--r-- 1 root root   50 Sep 29 14:53 status.txt\n";
+const HOST = "ci-runner-01";
+const COMMAND = "ls -la /srv/agent-output";
+
+const screen = document.getElementById("screen");
+const esc = s => String(s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+const prompt = `<span class="p-user">root@${HOST}</span>:<span class="p-path">~</span># `;
+const started = new Date().toISOString().slice(0, 19).replace("T", " ") + " UTC";
+
+document.getElementById("sub").textContent = `Session opened ${started} by c.hasbrouck`;
+
+let ran = false;
+screen.innerHTML = `<span class="sys">Connected to ${HOST}.</span>\n` + prompt + esc(COMMAND) + '<span class="cursor"></span>';
+
+function run() {
+  if (ran) return;
+  ran = true;
+  document.getElementById("hint").textContent = "";
+  screen.innerHTML = `<span class="sys">Connected to ${HOST}.</span>\n` + prompt + esc(COMMAND) + "\n";
+  setTimeout(() => {
+    screen.innerHTML += esc(LISTING.replace(/\n$/, "")) + "\n" + prompt + '<span class="cursor"></span>';
+  }, 350);
+}
+
+document.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); run(); } });
+screen.focus();
+</script>
+</body>
+</html>

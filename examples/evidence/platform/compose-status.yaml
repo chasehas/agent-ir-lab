@@ -1,0 +1,15 @@
+# Status-report jobs: may reach internal services and write reports to the shared output folder.
+services:
+  default:
+    image: lab/agent-sandbox:1
+    init: true
+    command: tail -f /dev/null
+    working_dir: /work
+    volumes:
+      - /srv/agent-output:/output
+    networks:
+      - lab
+
+networks:
+  lab:
+    external: true

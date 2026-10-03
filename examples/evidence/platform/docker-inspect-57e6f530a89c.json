@@ -1,0 +1,229 @@
+[
+    {
+        "Id": "57e6f530a89c71ff645e56e2ac0a17e1a6d9cca09ed62ac4f83502219b9da015",
+        "Created": "2026-09-29T14:53:13.550791957Z",
+        "Path": "tail",
+        "Args": [
+            "-f",
+            "/dev/null"
+        ],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 11552,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-09-29T14:53:13.583723667Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+        },
+        "Image": "sha256:c0b5e5be918e1c2d7f39aa517361f9eed1cd0624f2d61a3a64fa57ebca74e0df",
+        "ResolvConfPath": "/var/lib/docker/containers/57e6f530a89c71ff645e56e2ac0a17e1a6d9cca09ed62ac4f83502219b9da015/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/57e6f530a89c71ff645e56e2ac0a17e1a6d9cca09ed62ac4f83502219b9da015/hostname",
+        "HostsPath": "/var/lib/docker/containers/57e6f530a89c71ff645e56e2ac0a17e1a6d9cca09ed62ac4f83502219b9da015/hosts",
+        "LogPath": "/var/lib/docker/containers/57e6f530a89c71ff645e56e2ac0a17e1a6d9cca09ed62ac4f83502219b9da015/57e6f530a89c71ff645e56e2ac0a17e1a6d9cca09ed62ac4f83502219b9da015-json.log",
+        "Name": "/inspect-ex-status-re-icupxox-default-1",
+        "RestartCount": 0,
+        "Driver": "overlayfs",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": [
+                "/srv/agent-output:/output:rw"
+            ],
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "lab",
+            "PortBindings": {},
+            "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "host",
+            "Dns": null,
+            "DnsOptions": null,
+            "DnsSearch": null,
+            "ExtraHosts": [],
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": null,
+            "BlkioDeviceReadBps": null,
+            "BlkioDeviceWriteBps": null,
+            "BlkioDeviceReadIOps": null,
+            "BlkioDeviceWriteIOps": null,
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": null,
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": false,
+            "PidsLimit": null,
+            "Ulimits": null,
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/sys/devices/virtual/powercap",
+                "/sys/firmware"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ],
+            "Init": true
+        },
+        "Storage": {
+            "RootFS": {
+                "Snapshot": {
+                    "Name": "overlayfs"
+                }
+            }
+        },
+        "Mounts": [
+            {
+                "Type": "bind",
+                "Source": "/srv/agent-output",
+                "Destination": "/output",
+                "Mode": "rw",
+                "RW": true,
+                "Propagation": "rprivate"
+            }
+        ],
+        "Config": {
+            "Hostname": "57e6f530a89c",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": true,
+            "AttachStderr": true,
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "LANG=C.UTF-8",
+                "GPG_KEY=7169605F62C751356D054A26A821E680E5FA6305",
+                "PYTHON_VERSION=3.12.14",
+                "PYTHON_SHA256=5c8462af5790baf43a321a1559dbe0db06d1be4300fb85fb53c40060668e548a"
+            ],
+            "Cmd": [
+                "tail",
+                "-f",
+                "/dev/null"
+            ],
+            "Image": "lab/agent-sandbox:1",
+            "Volumes": null,
+            "WorkingDir": "/work",
+            "Entrypoint": null,
+            "Labels": {
+                "com.docker.compose.config-hash": "4dd5853d30d7be46fff5782c3f8300b9742a7c2f60edec749fba7273058dd7fe",
+                "com.docker.compose.container-number": "1",
+                "com.docker.compose.depends_on": "",
+                "com.docker.compose.image": "sha256:c0b5e5be918e1c2d7f39aa517361f9eed1cd0624f2d61a3a64fa57ebca74e0df",
+                "com.docker.compose.oneoff": "False",
+                "com.docker.compose.project": "inspect-ex-status-re-icupxox",
+                "com.docker.compose.project.config_files": "/opt/agent-jobs/compose-status.yaml",
+                "com.docker.compose.project.working_dir": "/opt/agent-jobs",
+                "com.docker.compose.service": "default",
+                "com.docker.compose.version": "5.1.1"
+            }
+        },
+        "NetworkSettings": {
+            "SandboxID": "986c2c15afdb8ebc1f27a6ccbd048e9f81fef3dabd7328b604c0b2e73bbe4ebf",
+            "SandboxKey": "/var/run/docker/netns/986c2c15afdb",
+            "Ports": {},
+            "Networks": {
+                "lab": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": [
+                        "inspect-ex-status-re-icupxox-default-1",
+                        "default"
+                    ],
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "29c4d3842ec69f60a2c6caf48ee6fb69386d834c1cff43f89000f444a1fb7591",
+                    "EndpointID": "b144599d12a7fefb707b1668b29b2d47bd684b3a7f0e405c47b6b4e920630986",
+                    "Gateway": "172.19.0.1",
+                    "IPAddress": "172.19.0.3",
+                    "MacAddress": "2a:9e:96:c8:ea:ab",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": [
+                        "inspect-ex-status-re-icupxox-default-1",
+                        "default",
+                        "57e6f530a89c"
+                    ]
+                }
+            }
+        },
+        "ImageManifestDescriptor": {
+            "mediaType": "application/vnd.oci.image.manifest.v1+json",
+            "digest": "sha256:80127111b0679da657fd54ef9bbf5bb1bcc84ab87c8f7245b8bb9389411ca39f",
+            "size": 1434,
+            "platform": {
+                "architecture": "amd64",
+                "os": "linux"
+            }
+        }
+    }
+]

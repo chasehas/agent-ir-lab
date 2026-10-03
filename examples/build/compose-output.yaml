@@ -1,0 +1,10 @@
+# Build jobs: no network; may write artifacts to the shared output folder.
+services:
+  default:
+    image: lab/agent-sandbox:1
+    init: true
+    command: tail -f /dev/null
+    working_dir: /work
+    network_mode: none
+    volumes:
+      - ${AGENT_OUTPUT_DIR:-/srv/agent-output}:/output

@@ -1,0 +1,8 @@
+# Default agent sandbox: no network, no host mounts.
+services:
+  default:
+    image: kestrel/agent-sandbox:1
+    init: true
+    command: tail -f /dev/null
+    working_dir: /repo
+    network_mode: none
