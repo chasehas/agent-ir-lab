@@ -1,16 +1,14 @@
 # Agent IR Lab
 
-**Status: draft v0.1, October 2026.** Built for the M3 fellowship. Not yet tested by human incident responders. Found a mistake or have feedback? Open an issue.
+**Status: draft v0.1, October 2026.** Built for the M3 fellowship. Lightly tested. Found a mistake or have feedback? Open an issue.
 
-Hands-on material for incident responders meeting AI agent transcripts for the first time.
+<hr>
+
+Incident responders already know how to read evidence: audit logs, process trees, network logs, file timelines. When an AI agent is involved, there's a new source: the **transcript**, the agent platform's record of what the agent was told, what it thought, what it asked to do, and what came back. This lab shows you what a transcript contains, how it lines up with the host evidence you know, where it can mislead you, and how to use both together in an investigation.
 
 **[Try the demo in your browser](https://chasehas.github.io/agent-ir-lab/)**: the demo-day walkthrough, from SOC ticket to transcript to Falco alerts, with nothing to install.
 
-The takeaway: an agent's transcript records what the agent saw and claimed, so check it against host evidence before you act on it. In the demo, the agent says nothing was copied, and the host shows two files waiting to ship.
-
-You already know how to read Linux host evidence: audit logs, process trees, network logs, file timelines. When an AI agent is involved, there's a new source: the **transcript**, the agent platform's record of what the agent was told, what it thought, what it asked to do, and what came back. This lab shows you what a transcript contains, how it lines up with the host evidence you know, where it can mislead you, and how to use both together in an investigation.
-
-It's the practical companion to the [Agent Incident Response Playbook](https://docs.google.com/document/d/1qjdoAezkKrh4rZQlfZlpmzMFknomJhLCTR3UJ-Pg2BQ/edit).
+Also see the [Agent Incident Response Playbook](https://docs.google.com/document/d/1qjdoAezkKrh4rZQlfZlpmzMFknomJhLCTR3UJ-Pg2BQ/edit) for accompanying process.
 
 ## Start here
 
