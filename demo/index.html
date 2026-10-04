@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent IR Lab demo</title>
+<style>
+  :root {
+    --bg: #eef1f4;
+    --panel: #ffffff;
+    --text: #0f172a;
+    --muted: #475569;
+    --border: #c3ccd6;
+    --topbar: #1e293b;
+    --topbar-text: #f8fafc;
+    --accent: #1d4ed8;
+    --sans: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--bg); color: var(--text); font: 17px/1.55 var(--sans); }
+  .topbar { background: var(--topbar); color: var(--topbar-text); display: flex; align-items: center; padding: 0 24px; height: 54px; }
+  .brand { font-weight: 700; font-size: 19px; letter-spacing: .2px; }
+  main { max-width: 760px; margin: 48px auto; padding: 0 16px; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 28px 32px 32px; }
+  h1 { font-size: 26px; margin: 0 0 14px; }
+  p { margin: 0 0 22px; }
+  a { color: var(--accent); }
+  .start { display: inline-block; background: var(--accent); color: #fff; text-decoration: none; font-weight: 600; font-size: 18px; padding: 11px 22px; border-radius: 5px; }
+  .start:hover { background: #1e40af; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="brand">Agent IR Lab · Demo</div></header>
+<main>
+  <div class="card">
+    <h1>Agent IR Lab demo</h1>
+    <p>This is the demo-day walkthrough from Agent IR Lab: a SOC analyst triages a Falco alert raised by an AI agent's sandbox, using a ticket queue, the agent's transcript in Inspect View, the host's Falco alerts, and a live-response shell. Kestrel Analytics and its SOC tools are fictional. The transcripts, alerts, and folder listing are real captures from scripted agent runs. Start with ticket SOC-4512. Source and worked examples are at <a href="https://github.com/chasehas/agent-ir-lab">github.com/chasehas/agent-ir-lab</a>.</p>
+    <a class="start" href="ticket.html">Start the walkthrough &rarr;</a>
+  </div>
+</main>
+</body>
+</html>

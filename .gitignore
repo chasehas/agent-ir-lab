@@ -13,3 +13,6 @@ scenarios/*/build/falco/nomemlock.so
 examples/build/out/
 examples/build/captures/
 examples/build/fixtures/
+
+# Static demo site, built by tools/build_site.py (CI builds it for Pages)
+site/
