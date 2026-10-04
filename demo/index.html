@@ -24,7 +24,8 @@
   main { max-width: 760px; margin: 48px auto; padding: 0 16px; }
   .card { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 28px 32px 32px; }
   h1 { font-size: 26px; margin: 0 0 14px; }
-  p { margin: 0 0 22px; }
+  p { margin: 0 0 16px; }
+  .start { margin-top: 8px; }
   a { color: var(--accent); }
   .start { display: inline-block; background: var(--accent); color: #fff; text-decoration: none; font-weight: 600; font-size: 18px; padding: 11px 22px; border-radius: 5px; }
   .start:hover { background: #1e40af; }
@@ -40,11 +41,14 @@
 <main>
   <div class="card">
     <h1>Agent IR Lab demo</h1>
-    <p>This is the demo-day walkthrough from Agent IR Lab: a SOC analyst triages a Falco alert raised by an AI agent's sandbox, using a ticket queue, the agent's transcript in Inspect View, the host's Falco alerts, and a live-response shell. Kestrel Analytics and its SOC tools are fictional. The transcripts, alerts, and folder listing are real captures from scripted agent runs. Start with ticket SOC-4512. Source and worked examples are at <a href="https://github.com/chasehas/agent-ir-lab">github.com/chasehas/agent-ir-lab</a>.</p>
+    <p>This is a demo of Example 03 from the Agent IR Lab. A SOC analyst triages a Falco alert raised by an AI agent's sandbox, using a ticket queue, the agent's transcript, the host's Falco alerts, and a (fake) live-response shell.</p>
+    <p>Kestrel Analytics and its SOC tools are fictional; the transcripts, alerts, and folder listing are real captures from scripted agent runs.</p>
+    <p>Start with ticket SOC-4512. How would you resolve this ticket? How would a junior analyst resolve this ticket?</p>
+    <p>Source at <a href="https://github.com/chasehas/agent-ir-lab">github.com/chasehas/agent-ir-lab</a>.</p>
     <a class="start" href="ticket.html">Start the walkthrough &rarr;</a>
     <details class="spoiler">
-      <summary>The takeaway (spoiler: try the walkthrough first)</summary>
-      <p>The agent's transcript, and the AI summary built from it, say the copy failed and nothing was copied. Falco and the folder listing show two files were written to the shared output folder, where the nightly release picks them up. Resolving the ticket on the agent's word would have shipped an unscrubbed build with no SBOM. A transcript records what the agent saw and claimed; check it against host evidence before you act on it.</p>
+      <summary>Solution (spoiler: try the walkthrough first)</summary>
+      <p>The agent's transcript, and the AI summary of it, say the copy failed and no files were copied. A closer look at Falco and the folder listing shows two files were written to the shared output folder. Trusting the summary and resolving the ticket would have shipped a broken build with confidential data.</p>
     </details>
   </div>
 </main>
